@@ -19,6 +19,7 @@ CLASSIFIERS = [
 
 INSTALL_REQUIRES = ["pytest"]
 
+ENTRY_POINTS = {"pytest11": ["mark_no_py3 = pytest_mark_no_py3.plugin"]}
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
@@ -61,4 +62,5 @@ setup(
     long_description=read("README.md"),
     long_description_content_type="text/markdown",
     license="MIT",
+    entry_points=ENTRY_POINTS,
 )
