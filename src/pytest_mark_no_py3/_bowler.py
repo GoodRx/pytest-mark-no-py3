@@ -76,6 +76,8 @@ def add_marker(node, capture, filename):
 
     if indent is not None:
         node.prefix = indent
+    else:
+        node.prefix = ""
 
 
 def filter_not_already_marked(node, capture, filename):

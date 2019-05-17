@@ -94,6 +94,27 @@ class TestTestFunc:
             """
             ),
         ),
+        (
+            dedent(
+                """\
+                pytestmark = pytest.mark.db
+
+
+                def test_it():
+                    pass
+                """
+            ),
+            dedent(
+                """\
+                pytestmark = pytest.mark.db
+
+
+                @pytest.mark.no_py3
+                def test_it():
+                    pass
+                """
+            ),
+        ),
     ],
 )
 def test_add_marker(src, expected, tmpdir):
