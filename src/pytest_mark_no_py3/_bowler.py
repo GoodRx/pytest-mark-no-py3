@@ -43,7 +43,7 @@ class TestFunc:
         return cls(filename=filename, selector=selector)
 
 
-def get_indent(node):
+def _get_indent(node):
     """Determine the indentation level of ``node``."""
     indent = None
     while node:
@@ -57,9 +57,33 @@ def get_indent(node):
     return indent
 
 
+def _get_marker(node):
+    """
+    If ``node`` is already decorated with ``MARKER``, return the
+    ``SMYBOL.decorator`` ``Node`` for ``MARKER``.
+
+    Else, return ``None``.
+    """
+    if node.parent.type == SYMBOL.decorated:
+        child = node.parent.children[0]
+        if child.type == SYMBOL.decorator:
+            decorators = [child]
+        elif child.type == SYMBOL.decorators:
+            decorators = child.children
+        else:
+            raise NotImplementedError
+        for decorator in decorators:
+            name = decorator.children[1]
+            assert name.type in {TOKEN.NAME, SYMBOL.dotted_name}
+
+            if str(name) == MARKER:
+                return decorator
+    return None
+
+
 def add_marker(node, capture, filename):
     """Add ``MARKER`` to the functions."""
-    indent = get_indent(node)
+    indent = _get_indent(node)
 
     decorated = Node(
         SYMBOL.decorated,
@@ -80,23 +104,39 @@ def add_marker(node, capture, filename):
         node.prefix = ""
 
 
-def filter_not_already_marked(node, capture, filename):
-    """Don't mark tests that are already marked with MARKER."""
-    if node.parent.type == SYMBOL.decorated:
-        child = node.parent.children[0]
-        if child.type == SYMBOL.decorator:
-            decorators = [child]
-        elif child.type == SYMBOL.decorators:
-            decorators = child.children
-        else:
-            raise NotImplementedError
-        for decorator in decorators:
-            name = decorator.children[1]
-            assert name.type in {TOKEN.NAME, SYMBOL.dotted_name}
+def remove_marker(node, capture, filename):
+    """Remove ``MARKER`` from the functions."""
+    assert node.parent.type == SYMBOL.decorated
 
-            if str(name) == MARKER:
-                return False
-    return True
+    decorated_node = node.parent
+
+    marker_node = _get_marker(node)
+
+    # Remove the marker from the AST
+    marker_node.remove()
+
+    has_other_decorators = any(
+        child.type in {SYMBOL.decorator, SYMBOL.decorators}
+        for child in decorated_node.children
+    )
+
+    if not has_other_decorators:
+        # Set the function node's leading whitespace to the same as the marker
+        # that was removed
+        node.prefix = marker_node.prefix
+        # Since there are no other decorators, replace the decorated node with
+        # the function node
+        decorated_node.replace(node)
+
+
+def filter_not_already_marked(node, capture, filename):
+    """Don't modify tests that are already marked with MARKER."""
+    return not _get_marker(node)
+
+
+def filter_already_marked(node, capture, filename):
+    """Only modify tests that are already marked with MARKER."""
+    return bool(_get_marker(node))
 
 
 def filter_failing_tests(results_file):
