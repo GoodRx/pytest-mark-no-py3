@@ -18,6 +18,7 @@ CLASSIFIERS = [
 ]
 
 INSTALL_REQUIRES = ["pytest"]
+EXTRAS_REQUIRE = {"bowler": ["bowler", "click", "attrs"]}
 
 ENTRY_POINTS = {"pytest11": ["mark_no_py3 = pytest_mark_no_py3.plugin"]}
 
@@ -57,6 +58,7 @@ setup(
     package_dir={"": "src"},
     include_package_data=True,
     install_requires=INSTALL_REQUIRES,
+    extras_require=EXTRAS_REQUIRE,
     url="https://github.com/GoodRx/pytest-mark-no-py3",
     description="pytest plugin and bowler codemod to help migrate tests to Python 3",
     long_description=read("README.md"),
