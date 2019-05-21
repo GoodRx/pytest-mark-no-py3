@@ -1,4 +1,3 @@
-
 ---
 
 dist: xenial
@@ -18,6 +17,17 @@ matrix:
 
 install: pip install -U pip tox wheel setuptools virtualenv
 script: tox
+
+deploy:
+  provider: pypi
+  distributions: sdist bdist_wheel
+  user: GoodRx
+  password:
+    secure: "ZFS363k0JvZggcfgNJVI2TRJzLTTopnL3Gfw81iNrLBVy5hpYS/MwyIr07T9NkQN44prmWUvI8LNoxDa54mjNM7sDey4xvcqhyzIVOdG5vYiIVcLiNIATFsIHJ1m2cZ7bK7ILudGtcJThVwUi1Y7aLxJWR1yWys5ij+JYulAaplop/0xOtuFyC5KCYk29xWc3sWBmDu3oE+Zrbf0M15zU3qeWeA4205REoJQN4qzp/h1guBaYdVohyrc0TXmQlMEDjnSTQGPab4aW+t7Cpzymj/h16z+8Mnd8VdVs9WKrVQCBgd7r0jwglQywdvDOyAj93Rg308mzeeoaIWkU/pEvYOjNWekGWdWviCx4b0cA3+dqHsDTFNAaF6HbE7BUu9I/2LMFI3Bnuk9sHA4mpo80o+1BbjBPGL9DXkxhGEx39q93mvMaI8M4jMaO/8bBVn1QCIsxVh1H8+vn++83fKYD6F+gFOi6TRrHGnWKtXtLxl6UIcniY2VIphLvholYqntgkb2sIlEti05ETmz0QeQsVeXU2zBVyu1A53n457njv9XI1Zcn/r9ScUTCs7cJobFkXA22phhs/Q8AA3VoSKJG6lKNMB1XA5ipqratInkRQt0pqgXm7G/KpjRZxiKh5EqNh3VdK9sXugL+Xe4kcTqXOhB5JFUlqlkOEQTrGel8Xo"
+  on:
+    tags: true
+    repo: GoodRx/pytest-mark-no-py3
+    condition: $TOXENV == py37
 
 # In addition to pull requests, always build these branches
 branches:
